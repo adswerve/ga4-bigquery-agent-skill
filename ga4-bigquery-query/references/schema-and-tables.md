@@ -93,7 +93,7 @@ event_params[].value.double_value: FLOAT
 Only ONE value type is populated per parameter.
 
 ### user_properties
-Same structure as event_params. User properties do NOT persist on every event — they appear only on the event where set.
+Same structure as event_params. In export data, user properties are often populated only on events where the value was set or updated, so do not assume they are present on every event.
 
 ### items
 Flat struct with named fields (item_id, item_name, price, etc.) plus nested item_params (from 2023-10-25).

@@ -140,9 +140,10 @@ Then remove LIMIT and expand date range once logic is confirmed.
 ## Cost Estimation
 
 Before running expensive queries:
-1. BigQuery shows estimated bytes scanned in the query editor
-2. Rule of thumb: $5 per TB scanned (on-demand pricing)
-3. A typical GA4 property with 1M events/day ≈ 1-3 GB per daily table
+1. BigQuery shows estimated bytes scanned before execution in the query UI, and dry runs can estimate bytes programmatically.
+2. Current on-demand query pricing is $6.25 per TiB scanned in `us-central1`, with the first 1 TiB per month free per billing account. Pricing varies by region and can change, so verify against the live BigQuery pricing page.
+3. A GA4 property with 1M events per day might store roughly 1-3 GB in a daily export table, but this varies significantly with event parameter density, custom dimensions, user properties, and app vs. web instrumentation.
+4. For guardrails on large exploratory queries, use dry runs and `maximum_bytes_billed` where possible.
 
 ## Intraday Table Limitations
 

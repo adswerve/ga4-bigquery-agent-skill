@@ -1,6 +1,6 @@
 # GA4 BigQuery Query Skill
 
-An [Agent Skill](https://code.visualstudio.com/docs/copilot/customization/agent-skills) that gives AI agents the ability to write correct, performant, and cost-efficient BigQuery SQL for Google Analytics 4 data.
+An [Agent Skill](https://agentskills.io/) that gives AI agents the ability to write correct, performant, and cost-efficient BigQuery SQL for Google Analytics 4 data.
 
 ## What's Included
 
@@ -39,7 +39,7 @@ ga4-bigquery-query/
 
 ## Installation
 
-Copy the `ga4-bigquery-query/` folder into one of the supported skill locations:
+Copy the `ga4-bigquery-query/` folder into a supported skill location for your agent host:
 
 ### Project-level (shared with your team via source control)
 
@@ -73,30 +73,24 @@ Example:
 cp -r ga4-bigquery-query/ ~/.copilot/skills/ga4-bigquery-query/
 ```
 
-### Custom location
-
-You can also configure a custom skill directory in VS Code with the `chat.agentSkillsLocations` setting.
-
-### Verify installation
-
-1. Open VS Code
-2. Open the Chat view
-3. Type `/` — you should see `ga4-bigquery-query` in the skill list
-4. Alternatively, run **Chat: Open Customizations** from the Command Palette and check the **Skills** tab
-
 ## Usage
 
-Once installed, the skill activates automatically when you ask Copilot questions about GA4 BigQuery data. You can also invoke it directly:
+Once installed, ask your agent GA4 BigQuery questions such as:
 
 ```
-/ga4-bigquery-query Write a query to get sessions by source/medium for the last 30 days
+Write a query to get sessions by source/medium for the last 30 days
 ```
 
-The agent will use `{project}.{dataset}.events_*` as placeholders — replace these with your actual BigQuery project and GA4 dataset (`analytics_<property_id>`).
+For runnable SQL, the agent needs your BigQuery project ID and either:
+
+- your GA4 dataset name, or
+- your GA4 property ID
+
+If only the property ID is known, the dataset is usually `analytics_<property_id>`. Documentation examples use `{project}` and `{dataset}` as placeholders, but the agent should replace them automatically when enough context is available and ask for the missing identifier if it is not.
 
 ## How It Works
 
-Agent Skills use [progressive loading](https://code.visualstudio.com/docs/copilot/customization/agent-skills#_how-copilot-uses-skills):
+Agent Skills use progressive loading:
 
 1. **Discovery** — The agent reads the skill name and description from SKILL.md frontmatter
 2. **Instructions** — When relevant, the agent loads the SKILL.md body (~200 lines of core patterns)
@@ -108,7 +102,7 @@ This means the skill stays efficient — it doesn't flood the context window wit
 
 This skill follows the open [Agent Skills standard](https://agentskills.io/) and works with:
 
-- GitHub Copilot in VS Code (chat and agent mode)
+- GitHub Copilot
 - GitHub Copilot CLI
 - GitHub Copilot cloud agent
 - Any agent that supports the agentskills.io specification

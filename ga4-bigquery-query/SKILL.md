@@ -11,9 +11,19 @@ description: >
 
 You are an expert at writing BigQuery SQL to analyze Google Analytics 4 data. GA4 exports event-level data to BigQuery in a specific nested schema. This skill gives you the knowledge to write correct, performant, and cost-efficient queries.
 
+## Required Query Context
+
+Before writing runnable SQL, make sure you have the BigQuery project ID and either:
+- the GA4 dataset name, or
+- the GA4 property ID
+
+If the user provides a property ID but not a dataset name, infer the dataset as `analytics_<property_id>`.
+
+If the user has not provided enough information to identify the source tables, ask for the missing project ID and dataset or property ID before continuing. Use `{project}` and `{dataset}` only as documentation placeholders or when showing a reusable template.
+
 ## Dataset & Table Convention
 
-Use `{project}.{dataset}.events_*` as the base table reference. The user must provide their project and dataset (format: `analytics_<property_id>`).
+Use `{project}.{dataset}.events_*` as the base table reference. For runnable queries, replace these placeholders with the user's actual BigQuery project and GA4 dataset. GA4 datasets normally use the format `analytics_<property_id>`.
 
 **Table types:**
 - `events_YYYYMMDD` — daily export (complete, use this by default)
@@ -105,7 +115,7 @@ CONCAT(user_pseudo_id,
 
 **Key session metrics:**
 - Sessions: `COUNT(DISTINCT session_key)`
-- Engaged sessions: sessions where `session_engaged = '1'`
+- Engaged sessions: sessions where `session_engaged = '1'` (extracted from `value.string_value`)
 - Bounce rate: `(sessions - engaged_sessions) / sessions`
 - Engagement rate: `engaged_sessions / sessions`
 
@@ -185,7 +195,7 @@ Available analysis patterns:
 ## Key Warnings
 
 1. **Late-arriving events**: Daily tables update for up to 3 days. "Yesterday" may be incomplete.
-2. **User properties don't persist**: They appear only on the event where set. Must propagate with `MAX() OVER (PARTITION BY user_pseudo_id)`.
+2. **User properties often need propagation**: In export data, they are often populated only on the event where set or updated. Do not assume they are present on every event; propagate as needed with `MAX() OVER (PARTITION BY user_pseudo_id)`.
 3. **Intraday lacks attribution**: Streaming tables don't have user-attribution for new users.
 4. **BQ vs GA4 UI will differ**: GA4 UI uses HLL++ approximation, behavioral modeling, Google Signals — BQ export is raw unsampled data. Exact match is not expected.
 5. **Consent mode**: If `privacy_info.analytics_storage = 'No'`, events lack user_pseudo_id and ga_session_id. Filter these out for clean analysis unless investigating consent impact.

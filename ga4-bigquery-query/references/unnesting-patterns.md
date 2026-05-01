@@ -98,7 +98,7 @@ Same nested structure as event_params but accessed via `user_properties`:
 ```
 
 ### CRITICAL: User Properties Don't Persist
-User properties appear ONLY on the event where they were set. To apply a user property across all events for that user, propagate with a window function:
+In export data, user properties are often only populated on the event where they were set or updated. To apply a user property across all events for that user, propagate with a window function:
 
 ```sql
 WITH base AS (
@@ -140,4 +140,4 @@ WHERE event_name = 'purchase'
 1. **Wrong value type**: Using `value.string_value` for ga_session_id (it's int_value) → returns NULL
 2. **Forgetting UNNEST**: `event_params.key` without UNNEST → SQL error
 3. **Double-counting with items UNNEST**: Summing event-level fields after UNNEST items multiplies the total
-4. **Assuming user_properties persist**: They don't — must propagate manually
+4. **Assuming user_properties persist on every event**: They often do not — propagate manually when analyzing across events
