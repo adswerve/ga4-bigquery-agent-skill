@@ -1,10 +1,12 @@
-# GA4 BigQuery Query Skill
+# GA4 BigQuery Skills
 
-An [Agent Skill](https://agentskills.io/) that gives AI agents the ability to write correct, performant, and cost-efficient BigQuery SQL for Google Analytics 4 data.
+A collection of [Agent Skills](https://agentskills.io/) that give AI agents the ability to write correct, performant, and cost-efficient BigQuery SQL for Google Analytics 4 data — from everyday reporting queries to ML-ready dataset creation.
 
-## What's Included
+## Skills
 
-The skill covers:
+### `ga4-bigquery-query` — Reporting & Analysis
+
+Covers everything needed to query GA4 event data in BigQuery:
 
 - **Schema & table structure** — GA4 export format, all top-level fields, nested/repeated record patterns
 - **Event parameter extraction** — 3 UNNEST patterns, value type reference, user property propagation
@@ -17,6 +19,15 @@ The skill covers:
 - **Cost optimization** — `_table_suffix` patterns, column selection, materialization strategy
 - **Privacy & consent** — Consent mode impact on data quality, consent-aware query templates
 - **BigQuery SQL tips** — SAFE functions, MAX_BY, QUALIFY, PIVOT, ARRAY_AGG, named windows, REGEXP
+
+### `ga4-bigquery-ml-query` — ML Dataset Creation
+
+Covers building ML-ready datasets from GA4 data in BigQuery:
+
+- **Dataset architecture** — Lookback/lookahead temporal windows, entity pools, snapshot dates, leakage prevention
+- **Feature engineering** — Cumulative metrics, recency signals, site content features, traffic source and geo encoding
+- **Training vs inference modes** — Stored procedure pattern with `MODE` parameter, deterministic train/val/test splits
+- **GA4-specific examples** — Full propensity and predictive LTV query templates with 5-layer CTE architecture
 
 ## Skill Structure
 
@@ -35,11 +46,19 @@ ga4-bigquery-query/
     ├── cost-optimization.md
     ├── privacy-and-consent.md
     └── sql-tips.md
+
+ga4-bigquery-ml-query/
+├── SKILL.md                              # Main skill file (loaded by the agent)
+└── references/                           # Detailed reference files (loaded on demand)
+    ├── dataset-architecture.md
+    ├── feature-engineering.md
+    ├── training-and-inference.md
+    └── ga4-examples.md
 ```
 
 ## Installation
 
-Copy the `ga4-bigquery-query/` folder into a supported skill location for your agent host:
+Copy one or both skill folders into a supported skill location for your agent host. Install only the skills you need.
 
 ### Project-level (shared with your team via source control)
 
@@ -47,14 +66,16 @@ Copy into any of these directories at your repository root:
 
 ```
 .github/skills/ga4-bigquery-query/
-.agents/skills/ga4-bigquery-query/
-.claude/skills/ga4-bigquery-query/
+.github/skills/ga4-bigquery-ml-query/
+.agents/skills/
+.claude/skills/
 ```
 
 Example:
 
 ```bash
 cp -r ga4-bigquery-query/ /path/to/your-project/.github/skills/ga4-bigquery-query/
+cp -r ga4-bigquery-ml-query/ /path/to/your-project/.github/skills/ga4-bigquery-ml-query/
 ```
 
 ### Personal (available across all your workspaces)
@@ -62,18 +83,21 @@ cp -r ga4-bigquery-query/ /path/to/your-project/.github/skills/ga4-bigquery-quer
 Copy into any of these directories in your home folder:
 
 ```
-~/.copilot/skills/ga4-bigquery-query/
-~/.agents/skills/ga4-bigquery-query/
-~/.claude/skills/ga4-bigquery-query/
+~/.copilot/skills/
+~/.agents/skills/
+~/.claude/skills/
 ```
 
 Example:
 
 ```bash
 cp -r ga4-bigquery-query/ ~/.copilot/skills/ga4-bigquery-query/
+cp -r ga4-bigquery-ml-query/ ~/.copilot/skills/ga4-bigquery-ml-query/
 ```
 
 ## Usage
+
+### Reporting queries (`ga4-bigquery-query`)
 
 Once installed, ask your agent GA4 BigQuery questions such as:
 
@@ -88,6 +112,16 @@ For runnable SQL, the agent needs your BigQuery project ID and either:
 
 If only the property ID is known, the dataset is usually `analytics_<property_id>`. Documentation examples use `{project}` and `{dataset}` as placeholders, but the agent should replace them automatically when enough context is available and ask for the missing identifier if it is not.
 
+### ML dataset creation (`ga4-bigquery-ml-query`)
+
+Ask your agent to build ML-ready datasets, for example:
+
+```
+Build a propensity-to-purchase dataset using GA4 data with a 30-day lookback and 14-day label window
+```
+
+Before generating a query, the agent will confirm your ML objective, observation grain, label definition, and dataset identifiers. The output is a BigQuery stored procedure that supports both `TRAINING` and `INFERENCE` modes.
+
 ## How It Works
 
 Agent Skills use progressive loading:
@@ -96,13 +130,8 @@ Agent Skills use progressive loading:
 2. **Instructions** — When relevant, the agent loads the SKILL.md body (~200 lines of core patterns)
 3. **References** — As the agent works, it loads specific reference files on demand (e.g., only the ecommerce reference when you ask about revenue queries)
 
-This means the skill stays efficient — it doesn't flood the context window with all 11 reference files at once.
+This means the skills stay efficient — they don't flood the context window with all reference files at once.
 
 ## Compatibility
 
-This skill follows the open [Agent Skills standard](https://agentskills.io/) and works with:
-
-- GitHub Copilot
-- GitHub Copilot CLI
-- GitHub Copilot cloud agent
-- Any agent that supports the agentskills.io specification
+This skill follows the open [Agent Skills standard](https://agentskills.io/).
